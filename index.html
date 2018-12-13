@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Quaestiones Triviae</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  </head>
+
+  <body>
+
+    
+    <div class="container" id="trivia-box">
+      <div class="row">
+        <div class="col-md-8 triv-card">
+          <div id="triv-title">
+            Triviae Historia
+          </div>
+          <div>
+            <p id="time-left"></p>
+            <p id="question"></p>
+          </div>
+          <div>
+            <p class="answer" id="ans1"></p>
+            <p class="answer" id="ans2"></p>
+            <p class="answer" id="ans3"></p>
+            <p class="answer" id="ans4"></p>
+          </div>
+        </div>
+      </div> <!-- end container row -->
+    </div> <!-- end container -->
+
+    <div class="container" id="result-box">
+      <div class="row">
+        <div class="col-md-8 triv-card">
+          <div id="title-text">
+          </div>
+        </div>
+      </div> <!-- end container row -->
+    </div> <!-- end container -->
+
+    <div class="container" id="stats-box">
+      <div class="row">
+        <div class="col-md-8 triv-card">
+          <div id="stats-text">
+            <p id="correct"></p>
+            <p id="incorrect"></p>
+            <div
+          </div>
+        </div>
+      </div> <!-- end container row -->
+    </div> <!-- end container -->
+
+    <script type='text/javascript' src='assets/javascript/game.js'></script>
+    <!-- script needs to be at the end of the document so that the elements
+         have loaded by the time that we need them -->
+  </body>
+  
+
+</html>

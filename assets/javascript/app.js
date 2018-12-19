@@ -3,7 +3,7 @@ function Question(question, answer) {
   this.answer = answer;
 }
 
-var questions = [
+var allQuestions = [
   new Question("Inspired the French to enter the American Revolution.", "SARATOGA"),
   new Question("Initiated the War between the Confederacy and the Union.", "FORT SUMPTER"),
   new Question("Inspired the French to enter the American Revolution.", "SARATOGA"),
@@ -25,13 +25,13 @@ var questions = [
   new Question("This WW2 battle led to Eisenhower integrating the US Army for the first time.", "BULGE"),
 ];
 
-var answers = ["SARATOGA", "FORT SUMPTER", "BUNKER HILL", "GETTYSBURG", "YORKTOWN", "BULL RUN", "LEXINGTON AND CONCORD", "ANTIETAM", 
+var allAnswers = ["SARATOGA", "FORT SUMPTER", "BUNKER HILL", "GETTYSBURG", "YORKTOWN", "BULL RUN", "LEXINGTON AND CONCORD", "ANTIETAM", 
                "TRENTON","HASTINGS", "STALINGRAD", "VIENNA", "WATERLOO", "MIDWAY", "TRAFALGAR", "AGINCOURT", "VERDUN", "BULGE"];
-var result = {
-  0: "Incorrect",
-  1: "Correct!"
-};
+
+var numCorrect = 0;
 var time = 15;
+
+var curQuestion = Question("Question has not been asked", "Answer has not been given")
 
 function randomize(arr) {
   var curIdx = arr.length, tempVal, rndIdx;
@@ -55,27 +55,94 @@ function randomize(arr) {
   return arr;
 }
 
-//recursively iterates through all questions, asks each one followed by results
-function showQuestion(num) {
-  //if the number is out of bounds or results in only 1 answer
-  if(num >= questions.length || num <= 1) {
-    num = questions.length-1; //sets it to the greatest index
+function createSelectionOfAnswers(answers, correct, num){
+  var answerSelection = [correct];
+  var answers = answers.slice();
+  while(answerSelection.length !== num){
+    var add = answers.pop();
+    if(add !== correct){
+      var rand = Math.floor(Math.random()*3);
+      if(rand < 0){
+        answerSelection.shift(add);
+      } else if (rand > 0){
+        answerSelection.push(add);
+      } else {
+        var mid = answerSelection.length / 2;
+        answerSelection.splice(mid,0,add);
+      }
+    }
   }
-  if(num >= 0) {
-    question = question[num];
-    answers = randomize(answers);
+  return answerSelection;
+}
 
-    return showQuestion(--num);
+function fillHtmlAnswer(answers){
+  for(var i = 0; i<answers.length; i++){
+    $("#ans"+(i+1)).text(answers[i]);
+  }
+}
+
+function fillResultBox(isCorrect){
+  if(isCorrect) {
+    numCorrect++;
+    $("#cur-result").text("Correct!");
+  }else{
+    $("#cur-result").text("Incorrect");
+  }
+  $("#cur-answer").text(curQuestion.answer);
+  $("#cur-question").text(curQuestion.question);
+}
+
+function setTimerHtml(){
+  $("#time-left").text("Remaining Time: "+time--);
+}
+
+function showHtmlQACard(number, result, timer){
+  clearTimeout(timer);
+  time = 15;
+  fillResultBox(result);
+  //flip to result card with z coords
+  setTimeout(function(){
+    //flip back to question card with z coords
+    debugger;
+    allAnswers = randomize(allAnswers);
+    return showQuestionAnswer(--number);
+  }, 8000);
+}
+
+//recursively iterates through all questions, asks each one followed by results
+function showQuestionAnswer(num) {
+  //if the number is out of bounds or results in only 1 answer
+  if(num >= allQuestions.length) {
+    num = allQuestions.length-1; //sets it to the greatest index
+  }
+  if(num > 0) {
+    curQuestion = allQuestions[num];
+    var answers = createSelectionOfAnswers(allAnswers, curQuestion.answer, 4);
+    var questionTimer = setInterval(setTimerHtml, 1000);
+    var noAnswer = setTimeout(showHtmlQACard.bind(null, num, false, questionTimer), 15000);
+    $("#question").text(curQuestion.question);
+    fillHtmlAnswer(answers);
+    $(".answer-choice").on('click', function(event){
+      clearInterval(questionTimer);
+      time = 15;
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      var isCorrect = this.textContent === curQuestion.answer;
+      clearTimeout(noAnswer);
+      showHtmlQACard(num, isCorrect);
+    });
+    
+    //return showQuestionAnswer(--num);
   } else {
     //TODO show correct/incorrect if incorrect also show question and correct answer
     return;
   }
-
 }
 
 function setup() {
-  questions = randomize(questions);
+  allQuestions = randomize(allQuestions);
   //answers = randomize(answers);
+  showQuestionAnswer(3);
 }
           
 $(window).on('load', function() {

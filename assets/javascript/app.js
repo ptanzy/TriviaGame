@@ -94,23 +94,38 @@ function fillResultBox(isCorrect){
 
 function setTimerHtml(){
   $("#time-left").text("Remaining Time: "+time--);
+  console.log("called from question timer interval");
 }
 
-function showHtmlQACard(number, result, timer){
-  clearTimeout(timer);
+function showHtmlQACard(result, timer){
+  if(timer === "qt"){
+    clearTimeout(questionTimer);
+  } else {
+    clearTimeout(noAnswer)
+  }
   time = 15;
   fillResultBox(result);
+  switchCardsZ("result-box", "trivia-box");
   //flip to result card with z coords
   setTimeout(function(){
     //flip back to question card with z coords
     debugger;
     allAnswers = randomize(allAnswers);
-    return showQuestionAnswer(--number);
-  }, 8000);
+    return showQuestionAnswer();
+  }, 4000);
 }
 
+function switchCardsZ(topId, bottomId) {
+  $("#"+topId).css('z-index', 1);
+  $("#"+bottomId).css('z-index', -1);
+}
+
+var started = false;
+var num = 3;
+var questionTimer = 0;
+var noAnswer = 0;
 //recursively iterates through all questions, asks each one followed by results
-function showQuestionAnswer(num) {
+function showQuestionAnswer() {
   //if the number is out of bounds or results in only 1 answer
   if(num >= allQuestions.length) {
     num = allQuestions.length-1; //sets it to the greatest index
@@ -118,18 +133,25 @@ function showQuestionAnswer(num) {
   if(num > 0) {
     curQuestion = allQuestions[num];
     var answers = createSelectionOfAnswers(allAnswers, curQuestion.answer, 4);
-    var questionTimer = setInterval(setTimerHtml, 1000);
-    var noAnswer = setTimeout(showHtmlQACard.bind(null, num, false, questionTimer), 15000);
+    questionTimer = setInterval(setTimerHtml, 1000);
+    noAnswer = setTimeout(showHtmlQACard.bind(null, false, "qt"), 15000);
     $("#question").text(curQuestion.question);
     fillHtmlAnswer(answers);
+    if(started){
+      switchCardsZ("trivia-box", "stats-box");
+      started = false;
+    }else{
+      switchCardsZ("trivia-box", "stats-box");
+    }
+    
     $(".answer-choice").on('click', function(event){
-      clearInterval(questionTimer);
-      time = 15;
       event.stopPropagation();
       event.stopImmediatePropagation();
+      clearInterval(questionTimer);
+      time = 15;
       var isCorrect = this.textContent === curQuestion.answer;
-      clearTimeout(noAnswer);
-      showHtmlQACard(num, isCorrect);
+      num--;
+      showHtmlQACard(isCorrect, "na");
     });
     
     //return showQuestionAnswer(--num);
@@ -141,10 +163,11 @@ function showQuestionAnswer(num) {
 
 function setup() {
   allQuestions = randomize(allQuestions);
+  started = !started;
   //answers = randomize(answers);
-  showQuestionAnswer(3);
+  showQuestionAnswer();
 }
           
 $(window).on('load', function() {
-  setup();
+  $("#start-button").on("click",setup);
 });

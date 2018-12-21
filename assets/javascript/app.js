@@ -6,7 +6,6 @@ function Question(question, answer) {
 var allQuestions = [
   new Question("Inspired the French to enter the American Revolution.", "SARATOGA"),
   new Question("Initiated the War between the Confederacy and the Union.", "FORT SUMPTER"),
-  new Question("Inspired the French to enter the American Revolution.", "SARATOGA"),
   new Question("Majority of the fighting actually occured on Breed's Hill.", "BUNKER HILL"),
   new Question("Bloodiest engagement of the American Civil War.", "GETTYSBURG"),
   new Question("Cornwallis was decisively defeated by Washington.", "YORKTOWN"),
@@ -23,13 +22,27 @@ var allQuestions = [
   new Question("With a heavy use of longbows the British inflicted a 9-1 casualty ratio.", "AGINCOURT"),
   new Question("Bloodiest battle of WW1 which lasted nearly a year and saw 300,000 men dead.", "VERDUN"),
   new Question("This WW2 battle led to Eisenhower integrating the US Army for the first time.", "BULGE"),
+  new Question("Fought between forces under the German Armin and the Roman Varus. Major Roman Defeat.", "TEUTOBURG FOREST"),
+  new Question("Following his defeat Romanus Diogenes was forced to kneel at the feet of Sultan Alp Arslan.", "MANZIKERT"),
+  new Question("After this naval victory the Persians under Xerxes were no longer a threat to the Greek states.", "SALAMIS"),
+  new Question("Athenian victory ended the first attempt to subjugate Greece under Darius.", "MARATHON"),
+  new Question("Literally 'the hot gates', it was dramatized in the movie 'The 300'.", "THERMOPYLAE"),
+  new Question("Defeat of the Romans by the Carthaganian general Hannibal (Barca not Lecter).", "CANNAE"),
+  new Question("Gothic victory over the Eastern Roman Emperor Valens.", "ADRIANOPLE"),
+  new Question("Rome defeat Epirus and allied Greeks from Magna Graecia.", "HERACLEA")
 ];
 
 var allAnswers = ["SARATOGA", "FORT SUMPTER", "BUNKER HILL", "GETTYSBURG", "YORKTOWN", "BULL RUN", "LEXINGTON AND CONCORD", "ANTIETAM", 
-               "TRENTON","HASTINGS", "STALINGRAD", "VIENNA", "WATERLOO", "MIDWAY", "TRAFALGAR", "AGINCOURT", "VERDUN", "BULGE"];
+               "TRENTON","HASTINGS", "STALINGRAD", "VIENNA", "WATERLOO", "MIDWAY", "TRAFALGAR", "AGINCOURT", "VERDUN", "BULGE",
+               "TEUTOBURG FOREST", "MANZIKERT", "SALAMIS", "MARATHON", "THERMOPYLAE", "CANNAE", "ADRIANOPLE", "HERACLEA"];
 
 var numCorrect = 0;
 var time = 15;
+var started = false;
+var INITIAL_NUM = 12;
+var num = INITIAL_NUM;
+var questionTimer = 0;
+var noAnswer = 0;
 
 var curQuestion = Question("Question has not been asked", "Answer has not been given")
 
@@ -109,10 +122,9 @@ function showHtmlQACard(result, timer){
   //flip to result card with z coords
   setTimeout(function(){
     //flip back to question card with z coords
-    debugger;
     allAnswers = randomize(allAnswers);
     return showQuestionAnswer();
-  }, 4000);
+  }, 3000);
 }
 
 function switchCardsZ(topId, bottomId) {
@@ -120,10 +132,6 @@ function switchCardsZ(topId, bottomId) {
   $("#"+bottomId).css('z-index', -1);
 }
 
-var started = false;
-var num = 3;
-var questionTimer = 0;
-var noAnswer = 0;
 //recursively iterates through all questions, asks each one followed by results
 function showQuestionAnswer() {
   //if the number is out of bounds or results in only 1 answer
@@ -141,7 +149,7 @@ function showQuestionAnswer() {
       switchCardsZ("trivia-box", "stats-box");
       started = false;
     }else{
-      switchCardsZ("trivia-box", "stats-box");
+      switchCardsZ("trivia-box", "result-box");
     }
     
     $(".answer-choice").on('click', function(event){
@@ -157,6 +165,10 @@ function showQuestionAnswer() {
     //return showQuestionAnswer(--num);
   } else {
     //TODO show correct/incorrect if incorrect also show question and correct answer
+    num = INITIAL_NUM;
+    $("#correct").text("Number Correct: "+numCorrect);
+    $("#incorrect").text("Number Incorrect: "+(num-numCorrect));
+    switchCardsZ("stats-box", "result-box");
     return;
   }
 }
@@ -165,6 +177,8 @@ function setup() {
   allQuestions = randomize(allQuestions);
   started = !started;
   //answers = randomize(answers);
+  $("#correct").empty();
+  $("#incorrect").empty();
   showQuestionAnswer();
 }
           
